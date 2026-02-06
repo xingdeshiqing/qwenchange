@@ -120,7 +120,7 @@ def save_json(result, output_dir):
 
 
 def main():
-    """主函数"""
+    """主函数 - 只运行一次"""
     image_path = r"D:\qwenchange\data\images\1.jpg"
     output_dir = r"D:\qwenchange\data\results"
 
@@ -128,27 +128,28 @@ def main():
         print(f"图片不存在: {image_path}")
         return
 
+    # 加载模型
     model, processor = load_model()
 
-    print("\n可以开始提问了（输入 'q' 退出）\n")
+    # 获取用户输入的问题
+    question = input("请输入问题: ").strip()
 
-    while True:
-        question = input("问题: ").strip()
+    if not question:
+        print("未输入问题，程序退出")
+        return
 
-        if question.lower() == 'q':
-            print("退出")
-            break
+    # 处理图片并生成描述
+    print(f"\n正在处理问题: {question}")
+    result = describe_image(image_path, model, processor, question)
 
-        if not question:
-            continue
+    if result:
+        # 保存结果
+        save_json(result, output_dir)
+        print(f"\n回答: {result['description']}")
+    else:
+        print("处理失败")
 
-        result = describe_image(image_path, model, processor, question)
-
-        if result:
-            save_json(result, output_dir)
-            print(f"结果: {result['description']}\n")
-        else:
-            print("处理失败\n")
+    print("\n程序运行完成，退出")
 
 
 if __name__ == "__main__":
